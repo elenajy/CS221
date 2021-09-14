@@ -1,0 +1,136 @@
+****************
+* Circuit Tracer
+* CS221
+* June 6, 2021
+* Elena Yang
+**************** 
+
+OVERVIEW:
+
+This program takes in an input file of a circuit board and finds the shortest
+path between a specified beginning and end point using either a stack or queue
+which the user can choose to use.
+
+
+INCLUDED FILES:
+
+ * CircuitBoard.java - reads in inputed files and translates data into a board
+ * CircuitTracer.java - main class file which uses a recursion algorithm to 
+ determine the shortest path
+ * CircuitTracerTester.java - test file
+ * TraceState.java - keeps track of the current trace states
+ * Storage.java - used as either a stack or queue
+ * InvalidFileFormatException - throws an exception if inputed file is not formatted
+ correctly
+ * OccupiedPositionException.java - throws an exception if tracestate tries to move 
+ to a space which is already occupied
+ * README - this file
+
+
+COMPILING AND RUNNING:
+
+ From the directory containing all source files, use one of the following 
+ command-line statement to run the program:
+
+ $ java CircuitTracer -s -c grid.dat
+ $ java CircuitTracer -q -c grid.dat
+ 
+ Use -s if you want to call a stack storage implementation, and use -q if you
+ want to call a queue implementation.
+
+ Console output will give the results after the program finishes.
+
+PROGRAM DESIGN AND IMPORTANT CONCEPTS:
+
+CircuitBoard reads the inputed data using a loop to traverse through each input
+one by one and copy the information into an array. It validates the data and 
+makes sure that the the board is valid. CircuitTracer then takes in this input
+and then runs the search algorithm. To do so, it instantiates a storage method,
+either a stack or a queue, and then checks to see if each spot next to the
+indicating starting point is open. If it is, it adds the one-length tracestate
+to a storage object and repeats the process until it comes up with the shortest
+ways to reach the ending point, all while throwing exceptions accordingly if 
+something is awry.
+
+TESTING:
+
+In order to test my program, I ran the provided CircuitTracerTester.java file.
+That helped me catch a lot of issues. For example, in my CircuitBoard I didn't
+catch an exception if there was less data than specified in the first two file
+arguments, and I was missing a line in a for loop to populate the array.
+
+My testing strategy was to run the tester file and then identify which test
+cases I was failing, and try to identify the solution for each of the tests until
+I got all the test cases filing. My program can handle multiple kinds of bad
+input because it has multiple catch statements. I don't think there are any
+issues/bugs remaining in the program because it passed it pretty exhaustive
+test file.
+
+DISCUSSION:
+ 
+There were two main parts I had to cover, the CircuitBoard and CircuitTracer.
+The former was relatively simple as I had the FormatChecker file I wrote
+second quarter which I just had to make a few alterations to. I ran into a few
+errors that I didn't address in the FormatChecker assignment, but now I'm 
+confident that CircuitBoard is functioning perfectly. 
+
+For the CircuitTracer part, the main issue I encountered was that I forgot to
+initialize the starting point so I ended up with mutliple null pointer exceptions.
+Once I did that, however, my CircuitTracer code ran. It was simple to write it because
+I was provided the pseudocode which made me confident that there was very little to
+no errors in that part of coding. I also didn't throw the correct exception sometimes,
+but after using the tester file I was able to figure out what the code wanted.
+ 
+Something that clicked for me was how everything ties back together. It was interesting
+to see how code I wrote at the beginning of the year could come useful now, and 
+using stacks and queues also made more sense.
+ 
+ANALYSIS:
+
+1) How does the choice of Storage configuration (stack vs queue) affect the sequence 
+in which paths are explored in the search algorithm? This requires more than a "stacks 
+are LIFOs and queues are FIFOs" answer.)
+	- A stack is a LIFO, which means that the last element to enter the stack will be
+	the first one to be removed. In this case, it means that if a stack storage method
+	is used, only one path will be explored at a time since whatever TraceState object
+	was just stored would be the next one to be called out. We would use a stack
+	if we don't care about the shortest path length, but rather just want a solution.
+	On the other hand, a queue is a FIFO which means that the first element to enter the
+	queue will also be the first one to be removed. This means that each path will be explored
+	at the same time, i.e., one step into each path, and then the second step for each
+	path, etc.
+	
+2) Is the total number of search states (possible paths) affected by the choice of 
+stack or queue?
+	- Not it does not because both a stack and queue storage structure will analyze
+	ALL of the possible paths which are the same in both cases. The only thing that matters
+	is the speed/type of paths as explained in my answer to question 1. 
+
+3) Is using one of the storage structures likely to find a solution in fewer steps 
+than the other? Always?
+	- It completely depends on the scenario. For example, a stack can brute force the problem
+	and can immediately find one solution; however, this can come after attempting a bunch
+	of other possible paths. It really comes down to which directions the stack tests first.
+
+4) Does using either of the storage structures guarantee that the first solution found 
+will be a shortest path?
+	- Using a queue guarantees that the first solution found is the shortest because it builds
+	each TraceState step by step, so once a solution is found then none of the other states have
+	less steps than it.
+
+5) How is memory use (the maximum number of states in Storage at one time) affected by the 
+choice of underlying structure?
+	- When a queue is picked, once a solution is found the memory use decreases faster because
+	that path/direction is complete so it is removed from the memory whereas if a stack is 
+	picked then the memory constantly fluctuates since it evaluates each path to the end.
+
+6) What is the Big-Oh runtime order for the search algorithm? Does it reflect the maximum size 
+of Storage? Does it reflect the number of board posisions? Does it reflect the number of paths 
+explored? Does it reflect the maximum path length? Is it something else? What is 'n'? What is 
+the primary input factor that increases the s of the task?
+	- I believe that the runtime is O(n^2). This is because as the total number of unique pathways
+	increase the time will scale accordingly similarily. How quickly each path is determiend to be
+	valid or invalid will have an effect on the runtime, and so will the number of open positions
+	and the size of the board. When it runs through, it works on the length of n and then on every
+	possible pathway. However, you can optimize the runtime to O(nlogn) if you have a pathway that 
+	is the shortest and then terminate it there.
